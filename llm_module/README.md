@@ -122,8 +122,8 @@ llm_module/
 ├── experiments.py      # Demonstrations of all features
 ├── main.py             # Interactive chatbot
 ├── verify.py           # Verification script
-├── DESIGN.md           # Detailed design explanation
-└── SIMPLIFIED_README.md # Beginner-friendly overview
+
+
 ```
 
 ---
@@ -149,8 +149,6 @@ Application asks for: format_prompt("template_name", variables)
 ---
 
 ## Mandatory Requirements Met
-
-See [REQUIREMENTS.md](REQUIREMENTS.md) for detailed validation.
 
 ✅ **Prompt Management** - Not hardcoded, separated in prompts.py  
 ✅ **Output Contracts** - Strict format + schema validation  
