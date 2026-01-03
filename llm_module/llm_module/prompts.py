@@ -13,8 +13,7 @@ ALWAYS follow the output format specified in the prompt."""
 TEMPLATES = {
     "qa": """Question: {question}
 
-Answer this clearly in 1-2 sentences. No explanations, no preamble.
-Just answer the question directly.""",
+Answer this question clearly and completely. Use as many lines as needed, but only explain what's necessary for understanding.""",
     
     "json_extract": """Extract the key information from the text below and return ONLY a valid JSON object.
 Do not include any text before or after the JSON.
@@ -31,12 +30,11 @@ Text: {text}
 Return ONLY the classification word, nothing else. No explanation.""",
     
     "sentiment": """Analyze the sentiment of the text below.
-Return ONLY one word: positive, neutral, or negative.
-No explanation, no punctuation.
+Return the sentiment and a brief explanation only if it's not obvious.
 
 Text: {text}
 
-Answer:""",
+Analysis:""",
     
     "structured_info": """Extract information about a person from the text below.
 Return ONLY a valid JSON object with exactly these fields: name, age, location

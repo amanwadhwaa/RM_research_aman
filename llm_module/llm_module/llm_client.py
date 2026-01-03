@@ -2,18 +2,20 @@
 
 import google.generativeai as genai
 import time
-from typing import Dict, Any, Tuple
+from logger import get_logger
+
+logger = get_logger(enabled=True)
 
 
-def call_gemini(api_key: str, prompt: str, model: str = "gemini-2.5-flash") -> Tuple[str, Dict[str, Any]]:
+def call_gemini(api_key: str, prompt: str, model: str = "gemini-2.5-flash") -> str:
     """
-    Make a raw API call to Gemini with tracing.
+    Make a raw API call to Gemini.
     
     This is the simplest possible API interaction:
     1. Configure with API key
     2. Create model instance
     3. Send prompt
-    4. Return response text + metadata
+    4. Return response text
     
     Args:
         api_key: Your Gemini API key
@@ -21,12 +23,7 @@ def call_gemini(api_key: str, prompt: str, model: str = "gemini-2.5-flash") -> T
         model: Which Gemini model to use
         
     Returns:
-        Tuple of (response_text, metadata_dict) where metadata contains:
-        - prompt_length: Length of the prompt sent
-        - response_length: Length of response received
-        - latency_ms: Time taken for API call
-        - timestamp: When the call was made
-        - raw_response: Full response object for inspection
+        The model's response text as a string
         
     Raises:
         Exception: If the API call fails (caller should handle with retry logic)
@@ -34,6 +31,8 @@ def call_gemini(api_key: str, prompt: str, model: str = "gemini-2.5-flash") -> T
     IMPORTANT: This function does NOT validate output format.
     That is the responsibility of the caller (parser.py).
     The caller must check that the response matches the expected format.
+    
+    NOTE: Logging and tracing happen as side effects only.
     """
     # Step 1: Tell genai library about our API key
     genai.configure(api_key=api_key)
@@ -41,20 +40,15 @@ def call_gemini(api_key: str, prompt: str, model: str = "gemini-2.5-flash") -> T
     # Step 2: Create a model instance
     llm_model = genai.GenerativeModel(model)
     
-    # Step 3: Send prompt and get response
+    # Step 3: Send prompt and get response (with tracing as side effect)
     start_time = time.time()
     response = llm_model.generate_content(prompt)
     latency_ms = (time.time() - start_time) * 1000
     
-    # Step 4: Extract text and build metadata
+    # Step 4: Extract text
     response_text = response.text
     
-    metadata = {
-        "prompt_length": len(prompt),
-        "response_length": len(response_text),
-        "latency_ms": round(latency_ms, 2),
-        "model": model,
-        "timestamp": time.time(),
-    }
+    # Logging as side effect only
+    logger.info(f"API call completed in {latency_ms:.0f}ms")
     
-    return response_text, metadata
+    return response_text

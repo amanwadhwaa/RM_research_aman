@@ -63,10 +63,9 @@ def experiment_1_successful_json():
     print(f"Input text: {text_to_extract}")
     print(f"Prompt sent to model:\n{prompt}\n")
     
-    print_subsection("3. Call API (with retry + fallback)")
-    response, metadata = call_gemini(api_key, prompt)
-    logger.info(f"API Response received ({metadata['response_length']} chars, {metadata['latency_ms']}ms)")
-    print(f"Raw response from model:\n{response}\n")
+    print_subsection("3. Call API")
+    response = call_gemini(api_key, prompt)
+    print(f"Response from model:\n{response}\n")
     
     print_subsection("4. Validate response against schema")
     result = parse_json(response, required_keys=required_keys, allow_extra_keys=False)
@@ -110,9 +109,8 @@ def experiment_2_invalid_response():
     print(f"Prompt:\n{prompt}\n")
     
     print_subsection("2. Call API and try to parse")
-    response, metadata = call_gemini(api_key, prompt)
-    logger.info(f"API Response received ({metadata['response_length']} chars)")
-    print(f"Raw response:\n{response}\n")
+    response = call_gemini(api_key, prompt)
+    print(f"Response:\n{response}\n")
     
     print_subsection("3. Try strict validation")
     required_keys = ["name", "age", "city"]
@@ -168,20 +166,7 @@ def experiment_3_failure_handling():
         max_attempts=max_attempts,
     )
 
-    # Normalize to response_text (string) for parsing
-    if raw is None:
-        logger.error("API call failed and returned None (no fallback provided)")
-        response_text = ""
-        metadata = {}
-    elif isinstance(raw, tuple):
-        # expected shape: (response_text, metadata)
-        response_text = raw[0]
-        metadata = raw[1] if len(raw) > 1 else {}
-        logger.info(f"API Response received ({metadata.get('response_length', len(response_text))} chars)")
-    else:
-        # raw is likely the fallback string
-        response_text = raw
-        metadata = {}
+    response_text = raw
 
     print(f"Response received (may be real API response or fallback)\n")
 
@@ -232,7 +217,7 @@ def experiment_4_prompt_change():
     prompt_v1 = format_prompt("structured_info", text=text)
     print(f"Prompt template version 1:\n{prompt_v1[:200]}...\n")
     
-    response_v1, _ = call_gemini(api_key, prompt_v1)
+    response_v1 = call_gemini(api_key, prompt_v1)
     result_v1 = parse_json(response_v1, required_keys=["name", "age", "city"])
     
     if result_v1.success:
