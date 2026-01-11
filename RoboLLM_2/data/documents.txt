@@ -1,0 +1,5 @@
+Photosynthesis is the process by which plants convert sunlight into chemical energy.
+
+Mitochondria are the powerhouse of the cell and generate ATP.
+
+Machine learning models can overfit when they memorize training data.
